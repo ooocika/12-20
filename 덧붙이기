@@ -1,0 +1,26 @@
+#include <iostream>
+#include <fstream>
+#include<string>
+
+int main(){
+  /*std::ofstream out ("test.txt", std::ios::app);
+
+  std::string s;
+
+  
+  if(out.is_open()) {
+    out << "덧붙이기";
+  }
+  return 0;*/
+
+  std::ofstream out("test.txt", std::ios::app);
+  std::ofstream out2("test2.txt", std::ios::app);
+
+  out.seekp(3, std::ios::beg);
+  out2.seekp(3, std::ios::beg);
+
+  out << "추가";
+  out2 << "abcd추가";
+
+  return 0;
+}
