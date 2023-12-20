@@ -1,0 +1,106 @@
+class Cell{
+protected:
+int x,y;
+Table* table;
+
+public:
+  virtual string stringify() = 0;
+virtual int to_numeric() = 0;
+
+Cell(int x, int y, Table* table);
+
+};
+
+
+// 위 셋은 각각 문자열, 정수, 시간 정보를 보관하는 클래스들 입니다
+
+class StringCell : public Cell{
+string data;
+
+public:
+string stringify();
+int to_numeric();
+
+StringCell(string data, int x, int y, Table* table);
+};
+class NumberCell : public Cell{
+int data;
+
+public:
+string stringify();
+int to_numeric();
+
+NumberCell(int data, int x, int y, Table* table);
+};
+class DateCell : public Cell{
+time_t data;
+
+public:
+string stringify();
+int to_numeric();
+
+DateCell(string s, int x, int y, Table* t);
+};
+/*단순히 데이터를 문자열이나 정수 형으로 바꾸기만 해주면 되기
+때문이지요. 참고로 DateCell 의 경우에는 편의를 위해서 yyyy-mm-dd 형식으로만 입력을 받는 것으로 정하였습니다.그 결과 다음과 같습니다*/
+
+Cell::Cell(int x, int y, Table* table) : x(x, y(y), table(table) {}
+
+StringCell::StringCell(string data, int x, int y, Table* table)
+    :data(data), Cell(x,y,t) {}
+string StringCell::stringify() { return data; }
+int StringCell::to_numeric() { return 0; }
+
+NumberCell::NumberCell(int data, int x, int y, Table* table)
+:data(data), Cell(x,y,t) {}
+
+string NumberCell::stringify() { return to_string(data); }
+int NumberCell::to_numeric() {return data;}
+
+string DateCell::stringify() {
+  char buf[50];
+  tm temp;
+  localtime_s(&temp, &data);
+
+  strftime(buf, 50, "%F", &temp);  
+
+  return string(buf);
+}
+int DateCell::to_numeric() { return static_cast<int>(data); } 
+
+DateCell::DateCell(string s, int x, int y, Table* t) : Cell(x,y,t) {
+  int year = atoi(s.c_str());
+  int month = atoi(s.c_str() + 5);
+  int day = atoi(s.c_str() + 8);
+
+  tm timeinfo;
+
+  timeinfo.tm_year = year - 1900;
+  timeinfo.tm_mon = month - 1;
+  timeinfo.tm_mday = day;
+  timeinfo.tm_hour = 0;
+  timeinfo.tm_min = 0;
+  timeinfo.tm_sec = 0;
+
+  data = mktime(&timeinfo);
+}
+
+
+class ExprCell : public Cell{
+string data;
+string* parsed_expr;
+
+Vector exp_vec;
+
+int precedence(char c);
+
+void parse_expression();
+
+public:
+ExprCell(string data, int x, int y, Table* table);
+
+string stringify();
+int to_numeric();
+
+};
+
